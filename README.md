@@ -15,5 +15,6 @@ quick instruction on how to run the database in docker.
 
 ### REST API
 * pip install flask
-Object-Relational Mapping (ORM) library SQLAlchemy
+
+###Object-Relational Mapping (ORM) library SQLAlchemy
 * pip install flask-sqlalchemy
