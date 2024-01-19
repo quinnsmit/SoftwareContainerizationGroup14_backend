@@ -5,3 +5,9 @@ quick instruction on how to run the database in docker.
 
 ### To run the db image
 `docker run -p 3306:3306 --name SC_database_container -d sc_database`
+
+### Env variables of the database:
+* MYSQL_ROOT_PASSWORD=root
+* MYSQL_DATABASE=SC_Group14
+* MYSQL_USER=admin
+* MYSQL_PASSWORD=admin`
