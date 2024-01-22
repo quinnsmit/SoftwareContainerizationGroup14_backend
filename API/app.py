@@ -1,10 +1,12 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://@localhost/SC_Group14'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
@@ -13,6 +15,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), nullable=False, unique=True)
     email = db.Column(db.String(255), nullable=False, unique=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+
 
     def serialize(self):
         return {
@@ -67,8 +71,10 @@ class Comment(db.Model):
             'created_at': self.created_at,
 
 
-            db.create_all()
+           
+        }
 
+    db.create_all()
 
 
 @app.route('/users', methods=['GET'])
@@ -123,5 +129,27 @@ def create_comment():
     db.session.commit()
     return jsonify({'message': "comment created."})
 
- 
+@app.route('/users', methods=['POST'])
+def create_user():
+    data = request.get_json()
+    hashed_password = generate_password_hash(data['password'], method='sha256')
+    new_user = User(username=data['username'], email=data['email'], password_hash=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User created successfully.'}), 201
 
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter_by(username=data['username']).first()
+
+    if user and check_password_hash(user.password_hash, data['password']):
+       
+        return jsonify({'message': 'Login successful', 'user_id': user.id}), 200
+    else:
+        return jsonify({'message': 'Invalid username or password'}), 401
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
