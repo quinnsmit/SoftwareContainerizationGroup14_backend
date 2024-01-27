@@ -20,6 +20,8 @@ CREATE TABLE Task (
     content TEXT,
     user_id INT,
     category_id INT,
+    isCompleted BOOLEAN,
+    isImportant BOOLEAN,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES User(id),
     FOREIGN KEY (category_id) REFERENCES Category(id)
