@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -6,10 +7,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:admin@172.17.0.2/SC_Group14'
+
+db_root_password = os.getenv("db_root_password", "default_password")
+print(db_root_password)
+MYSQL_SERVICE_HOST = os.getenv("MYSQL_SERVICE_HOST", "default_host")
+MYSQL_SERVICE_PORT = os.getenv("MYSQL_SERVICE_PORT", "default_port")
+db_name = os.getenv("db_name", "default_db_name")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:' + db_root_password + '@' + MYSQL_SERVICE_HOST + ':' + str(MYSQL_SERVICE_PORT) + '/' + db_name
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -141,4 +148,4 @@ def login():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
