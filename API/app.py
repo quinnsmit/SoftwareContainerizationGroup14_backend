@@ -4,11 +4,11 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://@localhost/SC_Group14'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:admin@172.17.0.2/SC_Group14'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
 
 
 class User(db.Model):
@@ -69,26 +69,15 @@ class Comment(db.Model):
             'user_id': self.user_id,
             'task_id': self.task_id,
             'created_at': self.created_at,
-
-
-           
         }
 
+with app.app_context():
     db.create_all()
-
 
 @app.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     return jsonify({'users': [user.serialize() for user in users]})
-
-@app.route('/users', methods=['POST'])
-def create_user():
-    data = request.get_json()
-    new_user = User(username=data['username'], email=data['email'])
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'message': 'User created successfully.'})
 
 @app.route('/categories', methods=['GET'])
 def get_categories():
@@ -144,7 +133,7 @@ def login():
     user = User.query.filter_by(username=data['username']).first()
 
     if user and check_password_hash(user.password_hash, data['password']):
-       
+
         return jsonify({'message': 'Login successful', 'user_id': user.id}), 200
     else:
         return jsonify({'message': 'Invalid username or password'}), 401
