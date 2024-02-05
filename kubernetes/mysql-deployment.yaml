@@ -18,13 +18,13 @@ spec:
       containers:
         - name: mysql
           image: mysql
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: flaskapi-secrets
-                  key: db_root_password
+                  key: db-root-password
           ports:
             - containerPort: 3306
               name: db-container
