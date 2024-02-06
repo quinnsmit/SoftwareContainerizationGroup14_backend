@@ -20,11 +20,13 @@ spec:
           image: mysql
           imagePullPolicy: Always
           env:
+            - name: MYSQL_DATABASE
+              value: SC_Group14
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: flaskapi-secrets
-                  key: db-root-password
+                  key: mysql-root-password
           ports:
             - containerPort: 3306
               name: db-container

@@ -27,22 +27,25 @@
 ## Command to run the application
 #CMD ["python", "app.py"]
 
-FROM python:3.6-slim
+FROM python:3.9
 
-RUN apt-get clean \
-    && apt-get -y update
+# Install MySQL development libraries
+RUN apt-get update && \
+    apt-get install -y default-libmysqlclient-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-get -y install \
-    nginx \
-    python3-dev \
-    build-essential
-
+# Set the working directory in the container
 WORKDIR /app
 
-COPY requirements.txt /app/requirements.txt
+# Copy the dependencies file to the working directory
+COPY requirements.txt .
+
+# Install any needed dependencies specified in requirements.txt
 RUN pip install -r requirements.txt --src /usr/local/src
 
+# Copy the rest of the application code to the working directory
 COPY . .
+
 
 EXPOSE 5000
 CMD [ "python", "app.py" ]
